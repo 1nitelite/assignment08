@@ -99,7 +99,7 @@ class FileIO:
                 cd_info = pickle.load(file)
             return cd_info
         except FileNotFoundError:
-            pass
+            return []
 
     def save_inventory(self, table):
         """Function to write data to file
@@ -162,8 +162,8 @@ class IO:
         """
         print('======= The Current Inventory: =======')
         print('ID\tCD Title (by: Artist)\n')
-        for cd in table:
-            print(f'{cd[0]} {cd[1]} (by: {cd[2]})')
+        for info in table:
+            print(f'{info[0]} {info[1]} (by: {info[2]})')
         print('======================================')
 
     @staticmethod
@@ -203,7 +203,7 @@ while True:
         try:
             data = file_io.load_inventory()
             IO.show_inventory(data)
-        except EOFError:
+        except (EOFError, TypeError):
             pass
         continue
     # let user add data to the inventory
@@ -216,7 +216,10 @@ while True:
         continue
     # show user current inventory
     elif str_choice == 'd':
-        IO.show_inventory(cd_objects_list)
+        try:
+            IO.show_inventory(cd_objects_list)
+        except TypeError:
+            pass
         continue
     # let user save inventory to file
     elif str_choice == 's':
