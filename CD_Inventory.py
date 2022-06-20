@@ -23,9 +23,9 @@ class CD:
         cd_title: (string) with the title of the CD
         cd_artist: (string) with the artist of the CD
     methods:
+        str: prints out cd info in inventory table
 
     """
-
 
     # -- Constructor -- #
     def __init__(self, cd_id, cd_title, cd_artist):
@@ -75,47 +75,53 @@ class FileIO:
 
     """
 
-    @staticmethod
-    def read_file(file_name):
+    def __init__(self, file_name):
+        self._file_name = file_name
+        
+    @property
+    def file_name(self):
+        return self._file_name
+    
+    @file_name.setter
+    def file_name(self, value):
+        self._file_name = value
+
+    def load_inventory(self):
         """Function to read data from a file using pickle
 
-        Args: file_name (string): name of file used to read the data from
+        Args: self: name of file used to read the data from
 
         Returns:
             Data from file
         """
         try:
-            with open(file_name, 'rb') as file:
+            with open(self.file_name, 'rb') as file:
                 cd_info = pickle.load(file)
             return cd_info
         except FileNotFoundError:
             pass
 
-    # TODO Add code to process data to a file
-    @staticmethod
-    def write_file(file_name, table):
+    def save_inventory(self, table):
         """Function to write data to file
 
         Writes the data to file using pickle
 
         Args:
-            file_name (string): name of file used to read the data from
-            table (list of dict): 2D data structure (list of dicts) that holds the data during runtime
-
-        Returns:
-            None.
+            self: name of file used to read the data from
+            table (list of data): data structure that holds the data during runtime
         """
-        with open(file_name, 'wb') as file:
+        with open(self.file_name, 'wb') as file:
             pickle.dump(table, file)
 
 # -- PRESENTATION (Input/Output) -- #
 class IO:
-    """Handling of input and output:
-
-    properties:
+    """Handling of input and output
 
     methods:
-
+        print_menu (none): -> None
+        menu_choice (none): -> (user input)
+        show_inventory (table): -> None
+        add_cd (none): -> (cd_id, cd_title, cd_artist)
 
     """
 
@@ -176,10 +182,9 @@ class IO:
 
 # -- Main Body of Script -- #
 # Load data from file into a list of CD objects on script start
+file_io = FileIO(STR_FILE_NAME)
 try:
-    init_file = FileIO.read_file(STR_FILE_NAME)
-    for info in init_file:
-        cd_objects_list.append(info)
+    cd_objects_list = file_io.load_inventory()
 except EOFError as error:
     pass
 
@@ -196,9 +201,7 @@ while True:
     # let user load inventory from file
     if str_choice == 'l':
         try:
-            data = FileIO.read_file(STR_FILE_NAME)
-            for line in data:
-                cd_objects_list.append(line)
+            data = file_io.load_inventory()
             IO.show_inventory(data)
         except EOFError:
             pass
@@ -223,7 +226,7 @@ while True:
         # Process choice
         if str_yes_no == 'y':
             # save data
-            FileIO.write_file(STR_FILE_NAME, cd_objects_list)
+            file_io.save_inventory(cd_objects_list)
         else:
             input('The inventory was NOT saved to file. Press [ENTER] to return to the menu.')
         continue
