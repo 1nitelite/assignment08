@@ -52,8 +52,9 @@ class TrackInfo:
             self._length = value
 
     # -- Methods -- #
+    def __str__(self):
+        return f'{self._position}, {self._message}, {self._length}'
 
-try:
-    cd_info = TrackInfo('1234', 'love', 5)
-except Exception as e:
-    print(e)
+cd_info = TrackInfo(345, 'title', 'name')
+
+print(cd_info)
